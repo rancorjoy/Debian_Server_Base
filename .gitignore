@@ -1,0 +1,29 @@
+# Git Ignore Rules
+
+# Secrets and Local Configurations
+.env
+.env.local
+.env.backup
+
+# Build and Compilation Artifacts
+dist/
+*.cfg
+*.iso
+
+# Python Runtime and Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+ENV/
+env/
+
+
+# System and Editor Overheads (Optional but Recommended)
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
