@@ -1,4 +1,6 @@
-import sys
+
+# Import needed libraries
+import sys                      # Standard python interpreter funcionality
 import re
 from pathlib import Path
 
