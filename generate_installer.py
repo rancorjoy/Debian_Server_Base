@@ -8,7 +8,7 @@ from string import Template     # Manages string functions, import 'Template' fu
 from utils import hash          # Generates hashed passwords
 from utils import load_env      # Loads env file to configure generated ISO/Preseed
 from utils import verify        # Verifies that produced preseed is valid
-#from utils import build_iso     # Builds packaged ISO file from generated preseed file and Debian version (from env)
+from utils import build_iso     # Builds packaged ISO file from generated preseed file and Debian version (from env)
 
 # Class that manages env -> preseed variable passing
 class CustomPreseedTemplate(Template):
@@ -73,8 +73,8 @@ def main():
     print("The Debian preseed file is prepared inside 'dist/preseed.cfg'.")
 
     # 6. Build a packaged ISO file that contains the preseed file
-    #print("\n[*] Building ISO file from preseed and .env settings")
-    #build_iso.main()
+    print("\n[*] Building ISO file from preseed and .env settings")
+    build_iso.build_iso()
 
 if __name__ == "__main__":
     main()

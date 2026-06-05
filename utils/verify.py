@@ -1,20 +1,23 @@
 
 # Import needed libraries
 import sys                      # Standard python interpreter funcionality
-import re
-from pathlib import Path
+import re                       # Support for regular expressions
+from pathlib import Path        # Manages file locations, import function 'Path'
+
+# Function that verifies preseed file has been filled in correctly
+
+# Scans the generated preseed file to ensure all placeholders 
+# formatted as $VARIABLE$ were correctly substituted and syntax is valid.
 
 def verify_compiled_preseed(file_path: Path) -> bool:
-    """
-    Scans the generated preseed file to ensure all placeholders 
-    formatted as $VARIABLE$ were correctly substituted and syntax is valid.
-    """
     print(f"[*] Starting compile verification on: {file_path}")
     
+    # If the output filepath does not exist, return false (the preseed file was never saved)
     if not file_path.exists():
         print(f"[!] Verification Failed: Output target file '{file_path}' does not exist.")
         return False
 
+    # Load the preseed file into content so it can be verified
     content = file_path.read_text()
     
     # 1. Regex Scan for Leftover Template Tokens ($VARIABLE$)
