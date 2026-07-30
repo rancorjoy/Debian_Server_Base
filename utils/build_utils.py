@@ -127,7 +127,7 @@ def inject_preseed(ISO_WORK, PRESEED):
 # Function that passes preseed function through boot menu
     # Patch isolinux/txt.cfg (BIOS boot) and grub/grub.cfg (UEFI boot)
     # to auto-select the install option and pass the preseed kernel parameter.
-def patch_boot_menu(ISO_WORK):
+def patch_boot_menu(ISO_WORK, net_iface="auto"):
 
     #Inject preseed kernel parameters into the ISO's boot menu configs so
     #the installer runs fully unattended, without any manual menu interaction.
@@ -139,7 +139,7 @@ def patch_boot_menu(ISO_WORK):
     # Kernel parameters that tell the Debian installer to:
     #   - load answers from the preseed file on the CD
     #   - skip confirmation prompts (auto=true, priority=critical)
-    preseed_param = "file=/cdrom/preseed.cfg auto=true priority=critical"
+    preseed_param = f"file=/cdrom/preseed.cfg auto=true priority=critical netcfg/choose_interface={net_iface}"
 
     # BIOS: isolinux 
     txt_cfg = ISO_WORK / "isolinux" / "txt.cfg"
@@ -161,7 +161,7 @@ def patch_boot_menu(ISO_WORK):
         txt_cfg.write_text(patched)
         print("[+] Patched isolinux/txt.cfg (BIOS boot).")
     else:
-        print("[!] isolinux/txt.cfg not found — BIOS boot won't be auto-preseed.")
+        print("[!] isolinux/txt.cfg not found - BIOS boot won't be auto-preseed.")
 
     # UEFI: grub
     # Debian moved grub.cfg location between versions, so this check both paths.
@@ -187,7 +187,7 @@ def patch_boot_menu(ISO_WORK):
         grub_cfg.write_text(patched)
         print("[+] Patched boot/grub/grub.cfg (UEFI boot).")
     else:
-        print("[!] grub.cfg not found — UEFI boot won't be auto-preseed.")
+        print("[!] grub.cfg not found - UEFI boot won't be auto-preseed.")
 
 # Function that repackages working ISO into output ISO
 def repack_iso(ISO_WORK, ISO_OUT, ISO_CACHE):

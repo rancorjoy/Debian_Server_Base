@@ -31,6 +31,9 @@ def build_iso():
     env_file = BASE_DIR / ".env"
     config = load_env.load_env_variables(env_file)
 
+    # Get network interface
+    net_iface = config.get("NET_IFACE", "auto")
+
     # Get URLs to download Debian and its checksum for the version defined in env
     version = config.get("DEBIAN_VERSION", "12.10.0")
     iso_filename = f"debian-{version}-amd64-netinst.iso"
@@ -51,7 +54,7 @@ def build_iso():
     build_utils.download_iso(DIST_DIR, ISO_URL, DEBIAN_SHA256, ISO_CACHE)   # Download the Debian ISO if it does not exist
     build_utils.extract_iso(ISO_WORK, ISO_CACHE)                            # Extract the Debian ISO into the working directory
     build_utils.inject_preseed(ISO_WORK, PRESEED)                           # Inject the preseed file into the working ISO
-    build_utils.patch_boot_menu(ISO_WORK)                                   # Ensure preseed is run when ISO is booted
+    build_utils.patch_boot_menu(ISO_WORK, net_iface)                        # Ensure preseed is run when ISO is booted
     build_utils.repack_iso(ISO_WORK, ISO_OUT, ISO_CACHE)                    # Repack the ISO into a new file
     build_utils.cleanup_workdir(ISO_WORK)                                   # Remove the working directory
 
