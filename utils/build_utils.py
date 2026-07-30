@@ -54,7 +54,7 @@ def download_iso(DIST_DIR, DEBIAN_URL, DEBIAN_SHA256, ISO_CACHE):
         # If the checksum matches the required checksum, this ISO can be used
         # Return before the ISO is downloaded
         if sha256_file(ISO_CACHE) == DEBIAN_SHA256:
-            print("[+] Checksum OK — skipping download.")
+            print("[+] Checksum OK - skipping download.")
             return
         
         # If the checksum does not match, the ISO must be deleted and redownloaded
@@ -191,10 +191,15 @@ def patch_boot_menu(ISO_WORK, net_iface="auto"):
 
 # Function that repackages working ISO into output ISO
 def repack_iso(ISO_WORK, ISO_OUT, ISO_CACHE):
-    
-    # If the output ISO exists, delete it
+
+    # If output ISO already exists, try to delete it to clear locks
     if ISO_OUT.exists():
-        ISO_OUT.unlink()
+        try:
+            ISO_OUT.unlink()
+        except OSError:
+            print(f"[!] Warning: Could not delete {ISO_OUT.name}. Windows may have locked it.")
+            print("    Attempting to remove via system call...")
+            subprocess.run(["rm", "-f", str(ISO_OUT)], check=False)
 
     print(f"[*] Repacking ISO to {ISO_OUT} ...")
 
