@@ -5,6 +5,7 @@ from pathlib import Path        # Manages file locations, import function 'Path'
 from string import Template     # Manages string functions, import 'Template' function
 
 # Import utility files
+from utils import sanitize      # Checks that all .env entries are valid for their field type
 from utils import hash          # Generates hashed passwords
 from utils import load_env      # Loads env file to configure generated ISO/Preseed
 from utils import verify        # Verifies that produced preseed is valid
@@ -28,8 +29,9 @@ def main():
 
     print("[*] Starting Debian Preseed Generation...")
 
-    # 1. Load Target Debian settings from env file
+    # 1. Load Target Debian settings from env file and ensure inputs are sanitized
     config = load_env.load_env_variables(env_file)
+    sanitize.validate_config(config)
 
     # 2. Extract plaintext targets and convert passwords to hashes
     if "ROOT_PASSWORD_PLAIN" not in config or "USER_PASSWORD_PLAIN" not in config:
