@@ -6,6 +6,7 @@ from string import Template     # Manages string functions, import 'Template' fu
 
 # Import utility files
 from utils import sanitize      # Checks that all .env entries are valid for their field type
+from utils import prompt_pw     # Allows the user to enter their passwords into the terminal instead of storing them in .env
 from utils import hash          # Generates hashed passwords
 from utils import load_env      # Loads env file to configure generated ISO/Preseed
 from utils import verify        # Verifies that produced preseed is valid
@@ -33,14 +34,49 @@ def main():
     config = load_env.load_env_variables(env_file)
     sanitize.validate_config(config)
 
-    # 2. Extract plaintext targets and convert passwords to hashes
-    if "ROOT_PASSWORD_PLAIN" not in config or "USER_PASSWORD_PLAIN" not in config:
-        print("[!] Compilation Aborted: Missing required root or user plaintext passwords in '.env'.")
-        sys.exit(1)
+    # 2. Obtain and hash user and root passwords, either in .env file or entered into the terminal
+    # 2a. Extract plaintext passwords (if entered) and convert passwords to hashes
+    root_plain = config.get("ROOT_PASSWORD_PLAIN", "").strip()
+    user_plain = config.get("USER_PASSWORD_PLAIN", "").strip()
 
-    print("[*] Hashing Passwords...")
-    config["ROOT_HASH"] = hash.generate_sha512_hash(config["ROOT_PASSWORD_PLAIN"])
-    config["USER_HASH"] = hash.generate_sha512_hash(config["USER_PASSWORD_PLAIN"])
+    # 2b. Handle ROOT_PASSWORD
+    # If the password is NOT in .env, prompt user for it
+    if not root_plain:
+
+        # Get and hash password
+        raw_pwd = prompt_pw.prompt_password("ROOT_PASSWORD_PLAIN")
+        print("[*] Hashing Root Password from terminal...")
+        config["ROOT_HASH"] = hash.generate_sha512_hash(raw_pwd)
+
+        # Clear temporary plaintext variable from memory
+        del raw_pwd
+
+    # If the password is in .env, use directly
+    else:
+        print("[*] Hashing Root Password from .env...")
+        config["ROOT_HASH"] = hash.generate_sha512_hash(root_plain)
+
+    # 2c. Handle USER_PASSWORD
+    # If the password is NOT in .env, prompt user for it
+    if not user_plain:
+
+        # Get and hash password
+        raw_pwd = prompt_pw.prompt_password("USER_PASSWORD_PLAIN")
+        print("[*] Hashing User Password from terminal...")
+        config["USER_HASH"] = hash.generate_sha512_hash(raw_pwd)
+
+        # Clear temporary plaintext variable from memory
+        del raw_pwd
+
+    # If the password is in .env, use directly
+    else:
+        print("[*] Hashing User Password from .env...")
+        config["USER_HASH"] = hash.generate_sha512_hash(user_plain)
+
+    # 2d. Security Cleanup: Remove plain text keys from the config dictionary
+    config.pop("ROOT_PASSWORD_PLAIN", None)
+    config.pop("USER_PASSWORD_PLAIN", None)
+
 
     # 3. Read and map env values
     if not template_file.exists():
