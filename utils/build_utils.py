@@ -221,7 +221,7 @@ def repack_iso(ISO_WORK, ISO_OUT, ISO_CACHE):
     # -c isolinux/boot.cat          - Boot catalog (El Torito)
     # -no-emul-boot                 - Non-emulation boot (not a floppy disk)
     # -boot-load-size 4             - Load 4 x 512 byte sectors of boot image into memory
-    # -boot-info-table              - Creates and locates isolinux.bin
+    # -boot-info-table              - Patches isolinux.bin
 
     # UEFI Boot Settings
     # -eltorito-alt-boot            - Start second El Torito entry for UEFI Boot
