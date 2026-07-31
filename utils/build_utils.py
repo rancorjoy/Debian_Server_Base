@@ -207,7 +207,7 @@ def repack_iso(ISO_WORK, ISO_OUT, ISO_CACHE):
     # Run Xorriso to create ISO using the following settings:
 
     # ISO Structure Settings
-    # -as mkisofs                   - Run in mkisofs compatability mode
+    # -as mkisofs                   - Run in mkisofs compatibility mode
     # -r                            - Preserves Unix file system features
     # -J                            - Adds Windows readable file names (alongside -r)
     # -joliet-long                  - Allows Windows filenames to be longer (64 -> 103)
@@ -216,7 +216,7 @@ def repack_iso(ISO_WORK, ISO_OUT, ISO_CACHE):
 
     # USB/ BIOS Boot Settings
     # -isohybrid-mbr <ISO_CACHE>    - Copies mbr code from original ISO, preserves USB hybrid boot
-    # -partition_offset 16          - Offset boot partition by 16 sectors (compatability increase)
+    # -partition_offset 16          - Offset boot partition by 16 sectors (compatibility increase)
     # -b isolinux/isolinux.bin      - Entry point of boot loader (El Torito)
     # -c isolinux/boot.cat          - Boot catalog (El Torito)
     # -no-emul-boot                 - Non-emulation boot (not a floppy disk)
