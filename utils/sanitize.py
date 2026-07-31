@@ -22,7 +22,7 @@ FIELD_WL = {
     # SSH settings
     # Limit SSH ports to a 1-5 digit number, valid range (1-65535) enforced in function below
     "SSH_PORT":       r'^\d{1,5}$',
-    "PUBLIC_KEY":     r'^(ssh-(ed25519|rsa)|ecdsa-[\w-]+) [A-Za-z0-9+/=]+( \S+)?$',
+    #"PUBLIC_KEY":     r'^(ssh-(ed25519|rsa)|ecdsa-[\w-]+) [A-Za-z0-9+/=]+( \S+)?$',
     #
     # Network configuration settings
     # Strictly matches 0.0.0.0 through 255.255.255.255

@@ -1,6 +1,7 @@
 # Import needed libraries
 import os                       # Standard operating system functionality
 import sys                      # Standard python interpreter funcionality
+import shutil                   # High level file operations
 from pathlib import Path        # Manages file locations, import function 'Path'
 
 # Import utility functions
@@ -54,6 +55,8 @@ def build_iso():
     build_utils.download_iso(DIST_DIR, ISO_URL, DEBIAN_SHA256, ISO_CACHE)   # Download the Debian ISO if it does not exist
     build_utils.extract_iso(ISO_WORK, ISO_CACHE)                            # Extract the Debian ISO into the working directory
     build_utils.inject_preseed(ISO_WORK, PRESEED)                           # Inject the preseed file into the working ISO
+    build_utils.inject_finish_script(ISO_WORK, config, BASE_DIR)            # Inject the preseed finish script to configure system properties into ISO
+    build_utils.inject_keys(ISO_WORK, BASE_DIR)                             # Inject authorized SSH keys into ISO
     build_utils.patch_boot_menu(ISO_WORK, net_iface)                        # Ensure preseed is run when ISO is booted
     build_utils.repack_iso(ISO_WORK, ISO_OUT, ISO_CACHE)                    # Repack the ISO into a new file
     build_utils.cleanup_workdir(ISO_WORK)                                   # Remove the working directory

@@ -34,12 +34,20 @@ def verify_compiled_preseed(file_path: Path) -> bool:
 
     # 2. Structural Content Integrity Verifications
     # Ensuring critical stanzas weren't stripped or broken during file writing
+
+    # Many elements removed when preseed late command was moved to finish script
+    #required_check_keywords = {
+    #    "passwd/root-password-crypted": "Root Cryptographic Shadow Hash Mapping",
+    #    "passwd/user-password-crypted": "User Cryptographic Shadow Hash Mapping",
+    #    "preseed/late_command": "Post-Install Custom Automation Script (late_command)",
+    #    "dns-nameservers": "Network Interfaces Template Block"
+    #}
+
     required_check_keywords = {
-        "passwd/root-password-crypted": "Root Cryptographic Shadow Hash Mapping",
-        "passwd/user-password-crypted": "User Cryptographic Shadow Hash Mapping",
-        "preseed/late_command": "Post-Install Custom Automation Script (late_command)",
-        "dns-nameservers": "Network Interfaces Template Block"
-    }
+    "passwd/root-password-crypted": "Root Cryptographic Shadow Hash Mapping",
+    "passwd/user-password-crypted": "User Cryptographic Shadow Hash Mapping",
+    "preseed/late_command": "Post-Install Custom Automation Script (late_command)",
+}
     
     failures = 0
     for keyword, description in required_check_keywords.items():

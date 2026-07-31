@@ -5,6 +5,8 @@
 .env.local
 .env.backup
 
+keys/authorized_keys
+
 # Build and Compilation Artifacts
 dist/
 *.cfg

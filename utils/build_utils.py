@@ -6,6 +6,7 @@ import shutil                   # Shell utilities (high level operations)
 import hashlib                  # Produces secure cryptographic hashes
 import urllib.request           # Allows pulling data from URLs
 import subprocess               # Allows the use of mutliple processes (in parellel)
+from string import Template     # Allows string substitution checking rules to be defined
 
 # Function that gets the checksum for a given ISO
 def get_checksum(iso_filename, sums_url):
@@ -123,6 +124,54 @@ def inject_preseed(ISO_WORK, PRESEED):
     dest = ISO_WORK / "preseed.cfg"
     shutil.copy(PRESEED, dest)
     print(f"[+] Injected preseed.cfg into ISO root.")
+
+# Template that ensures substitution members are stricly bounded by $ $
+class StrictDollarTemplate(Template):
+    delimiter = '$'
+    pattern = r'\$(?P<named>[A-Z_][A-Z0-9_]*)\$'
+
+# Function that reads finish.sh into memory, substitutes variables, and then copies it into the extracted ISO
+def inject_finish_script(ISO_WORK: Path, config: dict, BASE_DIR: Path):
+
+    src = BASE_DIR / "scripts" / "finish.sh"
+    dest = ISO_WORK / "finish.sh"
+
+    # If the finish script is missing, exit the program (the repo clone is broken)
+    if not src.exists():
+        print(f"[!] Script finish.sh not found at {src}")
+        sys.exit(1)
+
+    # 1. Read finish.sh (source) into memory
+    raw_content = src.read_text()
+
+    # 2. Perform substitution of .env variables
+    template = StrictDollarTemplate(raw_content)
+    try:
+        processed = template.substitute(config)
+
+    # If any variables are missing (this should not be possible at this point) exit the program
+    except KeyError as e:
+        print(f"[!] Missing variable for finish.sh: {e}")
+        sys.exit(1)
+
+    # 3. Write the processed version into the ISO
+    dest.write_text(processed)
+    print(f"[+] Injected processed finish.sh to {dest}")
+
+# Function that copies authorized keys into ISO
+def inject_keys(ISO_WORK: Path, BASE_DIR: Path):
+    keys_src = BASE_DIR / "keys" / "authorized_keys"
+    keys_dst = ISO_WORK / "authorized_keys"
+
+    if not keys_src.exists():
+        raise FileNotFoundError(f"Missing {keys_src}")
+
+    shutil.copy(keys_src, keys_dst)
+    print(f"[+] Copied authorized_keys to {keys_dst}")
+
+    # Immediate verification
+    if not keys_dst.exists() or keys_dst.stat().st_size == 0:
+        raise RuntimeError("[!] File authorized_keys was not written into the ISO work tree!")
 
 # Function that passes preseed function through boot menu
     # Patch isolinux/txt.cfg (BIOS boot) and grub/grub.cfg (UEFI boot)
