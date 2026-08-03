@@ -1,8 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-# Log everything
+# Store a log file in /var/log/late_command.log to allow debugging inside the new OS
 exec > /var/log/late_command.log 2>&1
+
+# Tell user this script is running in the command terminal output of the Debian installer (before system reboot)
 echo "=== Starting late_command finish script ==="
 date
 
@@ -37,16 +39,18 @@ fi
 chmod 600 /home/${USER_NAME}/.ssh/authorized_keys
 chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/.ssh
 
+# Print authorized public keys to terminal screen as comfirmation that keys were installed
 echo "[*] Final authorized_keys content:"
 cat /home/${USER_NAME}/.ssh/authorized_keys || true
 
 
 # 2. SSH hardening via drop-in (modern method)
 
+# Tell user that SSH hardening has begun and create file location for SSH config
 echo "[*] Writing sshd drop-in config"
-
 mkdir -p /etc/ssh/sshd_config.d
 
+# Add the following settings to the SSH configuration file (until EOF)
 cat > /etc/ssh/sshd_config.d/99-hardening.conf <<EOF
 Port ${SSH_PORT}
 PasswordAuthentication no
@@ -70,8 +74,10 @@ grep -q '^Include /etc/ssh/sshd_config.d/\*.conf' /etc/ssh/sshd_config \
 
 # 3. UFW Configuration
 
+# Alert user that UFW configuration is beginning
 echo "[*] Preparing first-boot UFW script"
 
+# Add the following settings to the UFW configuration file (until EOF)
 cat > /etc/rc.local <<EOF
 #!/bin/sh
 ufw default deny incoming
@@ -83,6 +89,7 @@ ufw --force enable
 rm -f /etc/rc.local
 EOF
 
+# Make UFW configuration run last before reboot
 chmod +x /etc/rc.local
 sed -i 's/ENABLED=no/ENABLED=yes/' /etc/ufw/ufw.conf
 
