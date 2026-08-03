@@ -3,6 +3,7 @@ import os                       # Standard operating system functionality
 import sys                      # Standard python interpreter funcionality
 from pathlib import Path        # Manages file locations, import function 'Path'
 from string import Template     # Manages string functions, import 'Template' function
+import shutil                   # High level file operations
 
 # Import utility files
 from utils import sanitize      # Checks that all .env entries are valid for their field type
@@ -21,6 +22,13 @@ class CustomPreseedTemplate(Template):
 
 # Main method, entry point for preseed/ISO generator
 def main():
+    
+    # Check for Xorriso before slower operations are run
+    # If Xorriso is not installed this will fail immediately
+    if shutil.which("xorriso") is None:
+       print("[!] xorriso not found. Install it with: sudo apt install xorriso (use WSL on Windows)")
+       sys.exit(1)
+    
     # Resolve absolute path locations relative to script directory execution context
     base_dir = Path(__file__).parent.resolve()
     env_file = base_dir / ".env"
