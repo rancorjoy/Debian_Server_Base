@@ -1,0 +1,19 @@
+[project]
+name = "debian-server-base"
+version = "0.1.0"
+description = "This repository acts as a generator/blueprint for the Debian server I am going to use to build a web-stack for my website."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "passlib>=1.7.4",
+    "path>=17.1.1",
+    "pathlib>=1.0.1",
+    "template>=0.7.6",
+]
+
+[project.scripts]
+debian-server-base = "debian_server_base:main"
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
